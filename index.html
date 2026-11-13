@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tobermory Family Trip — Jul 9–11, 2027</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--teal:#0e7a72;--ink:#22303a;--muted:#68777f;--line:#e2e8ea;--panel:#f6f8f8;--tint:#ecf6f4}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#fff}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px 56px}
+header{padding:26px 0 10px}
+h1{font-size:30px;margin:0 0 4px}
+.sub{color:var(--muted);margin:0;font-size:15px}
+.hero{width:100%;height:230px;object-fit:cover;border-radius:18px;margin:14px 0 6px}
+h2{font-size:21px;margin:30px 0 12px}
+.grid{display:grid;grid-template-columns:1fr;gap:18px}
+@media(min-width:720px){.grid{grid-template-columns:1fr 1fr}}
+.card{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(34,48,58,.05)}
+.card.fav{border-color:var(--teal);box-shadow:0 0 0 2px var(--teal),0 4px 14px rgba(14,122,114,.12);background:linear-gradient(0deg,var(--tint),#fff 55%)}
+.photo{position:relative;aspect-ratio:16/9;background:var(--panel)}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.nophoto{display:flex;align-items:center;justify-content:center}
+.nophoto-link{color:var(--teal);font-weight:600;text-decoration:none}
+.numbadge{position:absolute;top:10px;left:10px;background:var(--teal);color:#fff;font-weight:700;font-size:15px;min-width:32px;height:32px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 8px;box-shadow:0 1px 5px rgba(0,0,0,.3)}
+.toppick{position:absolute;top:10px;right:10px;background:#fff;color:var(--teal);font-weight:700;font-size:13px;border-radius:999px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.25)}
+.body{padding:14px 16px 16px}
+.body h3{margin:0;font-size:18px}
+.town{color:var(--muted);margin:3px 0 8px;font-size:14px}
+.price{margin:0 0 4px;font-size:15px}
+.meta{margin:0 0 4px;color:var(--muted);font-size:14px}
+.cancel{margin:0;color:var(--teal);font-size:14px;font-weight:600}
+.reason{margin:8px 0 0;color:#9a4a2f;font-size:14px;font-weight:600}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.btn{appearance:none;border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+.btn.details-btn{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.listing{background:var(--teal);border-color:var(--teal);color:#fff;margin-top:10px}
+.details{margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+.details .gallery{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}
+.details .gallery img{height:130px;border-radius:10px;flex:0 0 auto}
+.spec{margin:4px 0;font-size:14px;color:var(--ink)}
+.details h4{margin:12px 0 4px;font-size:14px}
+.details ul{margin:0;padding-left:18px;font-size:14px;color:var(--ink)}
+.details li{margin:2px 0}
+#map{height:420px;border-radius:18px;border:1px solid var(--line)}
+.pin{background:var(--teal);color:#fff;font-weight:700;border-radius:999px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;box-shadow:0 1px 5px rgba(0,0,0,.35);font-size:13px}
+.pin.favpin{background:#0b5e57}
+.pin.hidpin{background:#9db3ba}
+.pin .heart{font-size:10px;margin-left:2px}
+.dot{background:#5b6d75;border-radius:50%;border:2px solid #fff}
+.grotto{background:#22303a;color:#fff;border-radius:999px;display:flex;align-items:center;justify-content:center;border:2px solid #fff;font-size:12px;box-shadow:0 1px 5px rgba(0,0,0,.35)}
+details.hidden-sec{margin-top:34px}
+details.hidden-sec>summary{font-size:21px;font-weight:700;cursor:pointer;margin-bottom:12px}
+footer{color:var(--muted);font-size:13px;margin-top:36px}
+.leaflet-popup-content a{color:var(--teal);font-weight:600}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1>Tobermory Family Trip</h1>
+  <p class="sub">Family weekend · Fri Jul 9 – Sun Jul 11, 2027 · Prices in CAD, checked Nov 12, 2026</p>
+  <img class="hero" data-photo="hero-grotto.jpg" src="" alt="The Grotto, Bruce Peninsula National Park">
+</header>
+
+<h2>The shortlist</h2>
+<div class="grid">
+<article class="card fav" id="listing-1" data-number="1">
+  <div class="photo"><img data-photo="n1-1.jpg" src="" alt="Elgin Cottages #2"><span class="numbadge">1</span><span class="toppick">♥ Top pick</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Elgin Cottages #2</h3></div>
+    <p class="town">Port Elgin · Cottage · steps to the beach</p>
+    <p class="price"><strong>$658.79 total</strong> · $291.50/night</p>
+    <p class="meta">★ 4.7 (43 reviews) · Approx 2 hr to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jun 9 · partial refund before Jul 2</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="1">Details ▾</button>
+      <button class="btn copy-btn" data-number="1">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.305,-81.545" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-1" hidden>
+      <div class="gallery"><img data-photo="n1-1.jpg" src="" alt="Elgin Cottages #2 photo" loading="lazy"><img data-photo="n1-2.jpg" src="" alt="Elgin Cottages #2 photo" loading="lazy"><img data-photo="n1-3.jpg" src="" alt="Elgin Cottages #2 photo" loading="lazy"><img data-photo="n1-4.jpg" src="" alt="Elgin Cottages #2 photo" loading="lazy"></div>
+      <p class="spec">2 bedrooms · 2 queen beds · 1 bath · Sleeps 4</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">$291.50/night + $75.79 taxes · no cleaning or service fee shown</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Steps to the beach</li><li>Private patio and BBQ</li></ul>
+      <h4>Worth noting</h4><ul><li>Towels not confirmed on the listing — ask the host before booking</li><li>No carbon monoxide alarm reported</li><li>One of 4 cottages on a shared property; the on-site hot tub is not part of this cottage</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/1427215741840544915" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+<article class="card fav" id="listing-2" data-number="2">
+  <div class="photo nophoto"><span class="numbadge">2</span><span class="toppick">♥ Top pick</span><a class="nophoto-link" href="https://www.airbnb.ca/rooms/1619662457711057482" target="_blank" rel="noopener">See photos on the listing →</a></div>
+  <div class="body">
+    <div class="title-row"><h3>Cozy 4-Season Cottage</h3></div>
+    <p class="town">Sauble Beach · Bungalow, 5 min drive to the beach</p>
+    <p class="price"><strong>$681 total</strong> · $340.50/night</p>
+    <p class="meta">★ 4.75 (8 reviews) · About 1 hr 15 min to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jul 8, 2027</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="2">Details ▾</button>
+      <button class="btn copy-btn" data-number="2">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.63,-81.26" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-2" hidden>
+      
+      <p class="spec">2 bedrooms · 2 queen beds · 1 bath · Sleeps 6</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">No extra fee lines shown</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>High-speed Wi-Fi · washer/dryer</li><li>Gas fireplace · fire pit</li></ul>
+      <h4>Worth noting</h4><ul><li>Only 8 reviews — least track record of the five</li><li>Listing description says 3 bedrooms; booking details show 2</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/1619662457711057482" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+<article class="card fav" id="listing-3" data-number="3">
+  <div class="photo"><img data-photo="n3-1.jpg" src="" alt="Bruce Peninsula Country Loft on 17"><span class="numbadge">3</span><span class="toppick">♥ Top pick</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Bruce Peninsula Country Loft on 17</h3></div>
+    <p class="town">Wiarton · Loft · country property</p>
+    <p class="price"><strong>$706.25 total</strong> · $312.50/night</p>
+    <p class="meta">★ 4.98 (259 reviews) · Approx 1 hr 5 min to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jul 8, 2027</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="3">Details ▾</button>
+      <button class="btn copy-btn" data-number="3">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.72,-81.1" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-3" hidden>
+      <div class="gallery"><img data-photo="n3-1.jpg" src="" alt="Bruce Peninsula Country Loft on 17 photo" loading="lazy"><img data-photo="n3-2.jpg" src="" alt="Bruce Peninsula Country Loft on 17 photo" loading="lazy"><img data-photo="n3-3.jpg" src="" alt="Bruce Peninsula Country Loft on 17 photo" loading="lazy"></div>
+      <p class="spec">2 bedrooms · 2 queen beds · 1 bath · Sleeps 4</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">$312.50/night + $81.25 taxes</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Highest rated on the board: 4.98 from 259 reviews</li><li>Closest of the new finds to the Grotto</li></ul>
+      <h4>Worth noting</h4><ul><li>A loft — expect stairs</li><li>Next to a large shop; the backyard is not fully fenced</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/54020564" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+<article class="card" id="listing-11" data-number="11">
+  <div class="photo"><img data-photo="n11-1.jpg" src="" alt="Elgin Cottages · 3 Bedroom"><span class="numbadge">11</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Elgin Cottages · 3 Bedroom</h3></div>
+    <p class="town">Port Elgin · Cabin · steps to the beach</p>
+    <p class="price"><strong>$657.66 total</strong> · $291/night</p>
+    <p class="meta">★ 5.0 (4 reviews) · Approx 2 hr to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jun 25 · partial refund before Jul 2</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="11">Details ▾</button>
+      <button class="btn copy-btn" data-number="11">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.306,-81.543" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-11" hidden>
+      <div class="gallery"><img data-photo="n11-1.jpg" src="" alt="Elgin Cottages · 3 Bedroom photo" loading="lazy"><img data-photo="n11-2.jpg" src="" alt="Elgin Cottages · 3 Bedroom photo" loading="lazy"><img data-photo="n11-3.jpg" src="" alt="Elgin Cottages · 3 Bedroom photo" loading="lazy"><img data-photo="n11-4.jpg" src="" alt="Elgin Cottages · 3 Bedroom photo" loading="lazy"></div>
+      <p class="spec">3 bedrooms · 3 queen beds · 1 bath · Sleeps 6</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">$291/night + $75.66 taxes · no cleaning or service fee shown</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Steps to the beach</li><li>Three separate queen bedrooms</li></ul>
+      <h4>Worth noting</h4><ul><li>Towels not confirmed on the listing — ask the host before booking</li><li>Smoke and CO alarms listed as unavailable</li><li>The 5.0 rating rests on only 4 reviews</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/1718843989781788091" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+<article class="card" id="listing-13" data-number="13">
+  <div class="photo"><img data-photo="n13-1.jpg" src="" alt="The Bognor House"><span class="numbadge">13</span></div>
+  <div class="body">
+    <div class="title-row"><h3>The Bognor House</h3></div>
+    <p class="town">Meaford · Bognor · Grey County, near Owen Sound</p>
+    <p class="price"><strong>$629.41 total</strong> · $278.50/night</p>
+    <p class="meta">★ 4.92 (13 reviews) · About 1 hr 45 min to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jul 4, 2027</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="13">Details ▾</button>
+      <button class="btn copy-btn" data-number="13">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.52,-80.57" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-13" hidden>
+      <div class="gallery"><img data-photo="n13-1.jpg" src="" alt="The Bognor House photo" loading="lazy"><img data-photo="n13-2.jpg" src="" alt="The Bognor House photo" loading="lazy"><img data-photo="n13-3.jpg" src="" alt="The Bognor House photo" loading="lazy"><img data-photo="n13-4.jpg" src="" alt="The Bognor House photo" loading="lazy"></div>
+      <p class="spec">2 bedrooms · 2 queens + cot &amp; sectional · 1 bath · Sleeps 6</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">$278.50/night + $72.41 taxes</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Full kitchen · washer/dryer</li><li>Big deck · fire pit, firewood supplied</li></ul>
+      <h4>Worth noting</h4><ul><li>Longest drive to the Grotto (day trip, not a quick hop)</li><li>Only 13 reviews so far</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/1545602097878467363" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+<article class="card" id="listing-15" data-number="15">
+  <div class="photo"><img data-photo="n15-1.jpg" src="" alt="Sweetness in the Heart of Meaford"><span class="numbadge">15</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Sweetness in the Heart of Meaford</h3></div>
+    <p class="town">Meaford · Upper-level apartment · downtown Meaford</p>
+    <p class="price"><strong>$559 total</strong> · $279.50/night</p>
+    <p class="meta">★ 4.71 (45 reviews) · Approx 1 hr 50 min to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jun 25, 2027</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="15">Details ▾</button>
+      <button class="btn copy-btn" data-number="15">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.6,-80.59" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-15" hidden>
+      <div class="gallery"><img data-photo="n15-1.jpg" src="" alt="Sweetness in the Heart of Meaford photo" loading="lazy"><img data-photo="n15-2.jpg" src="" alt="Sweetness in the Heart of Meaford photo" loading="lazy"><img data-photo="n15-3.jpg" src="" alt="Sweetness in the Heart of Meaford photo" loading="lazy"><img data-photo="n15-4.jpg" src="" alt="Sweetness in the Heart of Meaford photo" loading="lazy"></div>
+      <p class="spec">2 bedrooms · double + queen, plus a couch · 1 bath · Sleeps 5</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">$279.50/night · no cleaning, service or tax lines shown</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Right in downtown Meaford</li></ul>
+      <h4>Worth noting</h4><ul><li>Upper-level apartment up a shared staircase</li><li>A cat lives on the premises and a dog visits</li><li>Exterior cameras at the driveway and entrance</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/1316682316389977659" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+<article class="card" id="listing-16" data-number="16">
+  <div class="photo"><img data-photo="n16-1.jpg" src="" alt="Beach &amp; Hiking Nearby · Large Fenced Yard"><span class="numbadge">16</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Beach &amp; Hiking Nearby · Large Fenced Yard</h3></div>
+    <p class="town">Meaford · House · near the beach</p>
+    <p class="price"><strong>$575.20 total</strong> · $287.60/night</p>
+    <p class="meta">★ 4.97 (179 reviews) · Approx 1 hr 50 min to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jul 8, 2027</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="16">Details ▾</button>
+      <button class="btn copy-btn" data-number="16">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.61,-80.58" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-16" hidden>
+      <div class="gallery"><img data-photo="n16-1.jpg" src="" alt="Beach &amp; Hiking Nearby · Large Fenced Yard photo" loading="lazy"><img data-photo="n16-2.jpg" src="" alt="Beach &amp; Hiking Nearby · Large Fenced Yard photo" loading="lazy"></div>
+      <p class="spec">3 bedrooms · 3 queen beds · 1.5 baths · Sleeps 6</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">$310/night less a $44.80 early-booking discount · no fee lines shown</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Large private fenced yard</li><li>Towels, sheets and beach towels provided</li><li>Top rated of the whole board</li></ul>
+      <h4>Worth noting</h4><ul><li>Bedrooms are upstairs</li><li>Check-in after 4 pm</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/32962644" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+<article class="card" id="listing-17" data-number="17">
+  <div class="photo"><img data-photo="n17-1.jpg" src="" alt="Simple Downtown Comfort"><span class="numbadge">17</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Simple Downtown Comfort</h3></div>
+    <p class="town">Owen Sound · House · downtown Owen Sound</p>
+    <p class="price"><strong>$648.62 total</strong> · $287/night</p>
+    <p class="meta">★ 4.92 (64 reviews) · Approx 1 hr 50 min to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jul 4, 2027</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="17">Details ▾</button>
+      <button class="btn copy-btn" data-number="17">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.57,-80.94" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-17" hidden>
+      <div class="gallery"><img data-photo="n17-1.jpg" src="" alt="Simple Downtown Comfort photo" loading="lazy"></div>
+      <p class="spec">3 bedrooms · 3 beds (sizes not stated) · 1 bath · Sleeps 5</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">$287/night + $74.62 taxes</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Downtown Owen Sound</li><li>Towels and linens listed</li></ul>
+      <h4>Worth noting</h4><ul><li>No air conditioning or central heating — portable fans only, which matters in July</li><li>Bed sizes are not stated on the listing</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/12481390" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+<article class="card" id="listing-18" data-number="18">
+  <div class="photo"><img data-photo="n18-1.jpg" src="" alt="Country View Loft with Hot Tub"><span class="numbadge">18</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Country View Loft with Hot Tub</h3></div>
+    <p class="town">Owen Sound · Woodford · Loft · Hwy 26 between Owen Sound and Meaford</p>
+    <p class="price"><strong>$714.16 total</strong> · $316/night</p>
+    <p class="meta">★ 4.92 (148 reviews) · Approx 1 hr 55 min to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jul 4, 2027</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="18">Details ▾</button>
+      <button class="btn copy-btn" data-number="18">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.58,-80.75" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-18" hidden>
+      <div class="gallery"><img data-photo="n18-1.jpg" src="" alt="Country View Loft with Hot Tub photo" loading="lazy"><img data-photo="n18-2.jpg" src="" alt="Country View Loft with Hot Tub photo" loading="lazy"><img data-photo="n18-3.jpg" src="" alt="Country View Loft with Hot Tub photo" loading="lazy"><img data-photo="n18-4.jpg" src="" alt="Country View Loft with Hot Tub photo" loading="lazy"></div>
+      <p class="spec">2 bedrooms · king + queen, plus 2 sofa beds · 1 bath · Sleeps 6</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">$316/night + $82.16 taxes</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Hot tub</li><li>Linens and towels included</li></ul>
+      <h4>Worth noting</h4><ul><li>Upper unit up exterior stairs; the owner lives on the property</li><li>Near a lake — kids need supervising around the water</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/737562329607271743" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+<article class="card" id="listing-19" data-number="19">
+  <div class="photo"><img data-photo="n19-1.jpg" src="" alt="Travelodge by Wyndham Owen Sound"><span class="numbadge">19</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Travelodge by Wyndham Owen Sound</h3></div>
+    <p class="town">Owen Sound · Hotel · 880 10th St E</p>
+    <p class="price"><strong>$639 total</strong> · $319.50/night</p>
+    <p class="meta">Approx 1 hr 50 min to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jul 8, 2027</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="19">Details ▾</button>
+      <button class="btn copy-btn" data-number="19">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.583,-80.928" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-19" hidden>
+      <div class="gallery"><img data-photo="n19-1.jpg" src="" alt="Travelodge by Wyndham Owen Sound photo" loading="lazy"><img data-photo="n19-2.jpg" src="" alt="Travelodge by Wyndham Owen Sound photo" loading="lazy"></div>
+      <p class="spec">1 room · 2 queen beds · 1 bath · Sleeps 4</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027 · 1 room</p>
+      <p class="spec">Free cancellation rate, checked on Booking.com Nov 12, 2026. A non-refundable rate is $543 total.</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Breakfast included (continental and buffet)</li><li>No prepayment, pay at the property</li></ul>
+      <h4>Worth noting</h4><ul><li>$250 refundable damage deposit due on arrival</li></ul>
+      <a class="btn listing" href="https://www.google.com/maps/search/?api=1&query=Travelodge by Wyndham Owen Sound Owen Sound" target="_blank" rel="noopener">View on Google Maps</a>
+    </div>
+  </div>
+</article>
+<article class="card" id="listing-20" data-number="20">
+  <div class="photo"><img data-photo="n20-1.jpg" src="" alt="Spark by Hilton Owen Sound"><span class="numbadge">20</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Spark by Hilton Owen Sound</h3></div>
+    <p class="town">Owen Sound · Hotel · 950 6th St E</p>
+    <p class="price"><strong>$554 total</strong> · $277/night</p>
+    <p class="meta">Approx 1 hr 50 min to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jul 8, 2027</p>
+    
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="20">Details ▾</button>
+      <button class="btn copy-btn" data-number="20">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.569,-80.938" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-20" hidden>
+      <div class="gallery"><img data-photo="n20-1.jpg" src="" alt="Spark by Hilton Owen Sound photo" loading="lazy"><img data-photo="n20-2.jpg" src="" alt="Spark by Hilton Owen Sound photo" loading="lazy"><img data-photo="n20-3.jpg" src="" alt="Spark by Hilton Owen Sound photo" loading="lazy"></div>
+      <p class="spec">1 room · 2 queen beds · 1 bath · Sleeps 4</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027 · 1 room</p>
+      <p class="spec">Free cancellation before Jul 8 rate, checked on Booking.com Nov 12, 2026. $532 with free cancellation before Jul 4; $472 non-refundable.</p>
+      
+      <h4>Good to know</h4><ul><li>Cheapest hotel option with free cancellation</li></ul>
+      <h4>Worth noting</h4><ul><li>No meal option with this room</li></ul>
+      <a class="btn listing" href="https://www.google.com/maps/search/?api=1&query=Spark by Hilton Owen Sound Owen Sound" target="_blank" rel="noopener">View on Google Maps</a>
+    </div>
+  </div>
+</article>
+</div>
+
+<h2>Where they are</h2>
+<div id="map"></div>
+
+<details class="hidden-sec" id="hidden-section">
+  <summary>Hidden (2)</summary>
+  <div class="grid">
+<article class="card" id="listing-12" data-number="12">
+  <div class="photo"><img data-photo="n12-1.jpg" src="" alt="Cabin in the Woods"><span class="numbadge">12</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Cabin in the Woods</h3></div>
+    <p class="town">Lion&#x27;s Head · Chickadee Cabin, Dragonfly Ridge · Georgian Bay side</p>
+    <p class="price"><strong>$516.56 total</strong> · $250/night</p>
+    <p class="meta">★ 4.78 (344 reviews) · About 35–40 min to the Grotto · 25 min to Tobermory</p>
+    <p class="cancel">✓ Free cancellation before Jun 9, 2027 (3 pm) · then 50% until Jul 2</p>
+    <p class="reason">Ruled out: you have to bring your own bedding and towels</p>
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="12">Details ▾</button>
+      <button class="btn copy-btn" data-number="12">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.99,-81.23" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-12" hidden>
+      <div class="gallery"><img data-photo="n12-1.jpg" src="" alt="Cabin in the Woods photo" loading="lazy"></div>
+      <p class="spec">Loft: 2 singles · double bed + queen sofabed · 1 bath (3 pc) · Sleeps 4</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">$250/night + $16.56 taxes</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Screened porch · firepit · kitchenette</li><li>Shortest drive to the Grotto</li></ul>
+      <h4>Worth noting</h4><ul><li>Bring your own bedding, sheets &amp; towels (pillows &amp; quilts supplied)</li><li>Stricter cancellation: free only until Jun 9</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/982175" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+<article class="card" id="listing-14" data-number="14">
+  <div class="photo"><img data-photo="n14-1.jpg" src="" alt="Camp Frost"><span class="numbadge">14</span></div>
+  <div class="body">
+    <div class="title-row"><h3>Camp Frost</h3></div>
+    <p class="town">Red Bay · Lake Huron side</p>
+    <p class="price"><strong>$671.58 total</strong> · $287/night</p>
+    <p class="meta">★ 4.82 (51 reviews) · About 45–50 min to the Grotto</p>
+    <p class="cancel">✓ Free cancellation before Jul 4, 2027</p>
+    <p class="reason">Ruled out: bunk beds</p>
+    <div class="actions">
+      <button class="btn details-btn" aria-expanded="false" data-target="14">Details ▾</button>
+      <button class="btn copy-btn" data-number="14">Copy link</button>
+      <a class="btn" href="https://www.google.com/maps/dir/?api=1&destination=44.815,-81.245" target="_blank" rel="noopener">Directions</a>
+    </div>
+    <div class="details" id="details-14" hidden>
+      <div class="gallery"><img data-photo="n14-1.jpg" src="" alt="Camp Frost photo" loading="lazy"><img data-photo="n14-2.jpg" src="" alt="Camp Frost photo" loading="lazy"><img data-photo="n14-3.jpg" src="" alt="Camp Frost photo" loading="lazy"><img data-photo="n14-4.jpg" src="" alt="Camp Frost photo" loading="lazy"></div>
+      <p class="spec">3 bedrooms · queen, bunk bed, double + air mattress · 2 baths · Sleeps 5</p>
+      <p class="spec">Dates priced: Fri Jul 9 – Sun Jul 11, 2027</p>
+      <p class="spec">$287/night + $97.58 taxes · no cleaning/service fee lines</p>
+      <p class="spec">✓ $0 due at booking</p>
+      <h4>Good to know</h4><ul><li>Walk to sandy beach at Red Bay</li><li>Most room to spread out · 2 baths</li></ul>
+      <h4>Worth noting</h4><ul><li>No A/C · spotty internet · lots of mosquitos</li><li>Well water has a smell (drinking water jugs supplied)</li></ul>
+      <a class="btn listing" href="https://www.airbnb.ca/rooms/798008080841786456" target="_blank" rel="noopener">View listing</a>
+    </div>
+  </div>
+</article>
+  </div>
+</details>
+
+<footer>Shortlist for a family weekend near Tobermory and the Grotto, July 2027. Prices were checked on Airbnb / Booking.com on Nov 12, 2026 and can change. Photos from the listings themselves.</footer>
+</div>
+
+<script src="photos-data-1.js"></script>
+<script src="photos-data-2.js"></script>
+<script src="photos-data-3.js"></script>
+<script src="photos-data-4.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+var LISTINGS = [{"n": 1, "name": "Elgin Cottages #2", "town": "Port Elgin", "lat": 44.305, "lng": -81.545, "fav": true, "hidden": false}, {"n": 2, "name": "Cozy 4-Season Cottage", "town": "Sauble Beach", "lat": 44.63, "lng": -81.26, "fav": true, "hidden": false}, {"n": 3, "name": "Bruce Peninsula Country Loft on 17", "town": "Wiarton", "lat": 44.72, "lng": -81.1, "fav": true, "hidden": false}, {"n": 11, "name": "Elgin Cottages \u00b7 3 Bedroom", "town": "Port Elgin", "lat": 44.306, "lng": -81.543, "fav": false, "hidden": false}, {"n": 13, "name": "The Bognor House", "town": "Meaford \u00b7 Bognor", "lat": 44.52, "lng": -80.57, "fav": false, "hidden": false}, {"n": 15, "name": "Sweetness in the Heart of Meaford", "town": "Meaford", "lat": 44.6, "lng": -80.59, "fav": false, "hidden": false}, {"n": 16, "name": "Beach & Hiking Nearby \u00b7 Large Fenced Yard", "town": "Meaford", "lat": 44.61, "lng": -80.58, "fav": false, "hidden": false}, {"n": 17, "name": "Simple Downtown Comfort", "town": "Owen Sound", "lat": 44.57, "lng": -80.94, "fav": false, "hidden": false}, {"n": 18, "name": "Country View Loft with Hot Tub", "town": "Owen Sound \u00b7 Woodford", "lat": 44.58, "lng": -80.75, "fav": false, "hidden": false}, {"n": 19, "name": "Travelodge by Wyndham Owen Sound", "town": "Owen Sound", "lat": 44.583, "lng": -80.928, "fav": false, "hidden": false}, {"n": 20, "name": "Spark by Hilton Owen Sound", "town": "Owen Sound", "lat": 44.569, "lng": -80.938, "fav": false, "hidden": false}, {"n": 12, "name": "Cabin in the Woods", "town": "Lion's Head", "lat": 44.99, "lng": -81.23, "fav": false, "hidden": true}, {"n": 14, "name": "Camp Frost", "town": "Red Bay", "lat": 44.815, "lng": -81.245, "fav": false, "hidden": true}];
+
+document.querySelectorAll('img[data-photo]').forEach(function(im) {
+  var d = window.PHOTO_DATA && window.PHOTO_DATA[im.getAttribute('data-photo')];
+  if (d) im.src = d;
+});
+
+function expandCard(n, scroll) {
+  var det = document.getElementById('details-' + n);
+  var card = document.getElementById('listing-' + n);
+  if (!det || !card) return;
+  var hs = document.getElementById('hidden-section');
+  if (hs && hs.contains(card)) hs.open = true;
+  det.hidden = false;
+  var btn = card.querySelector('.details-btn');
+  if (btn) { btn.setAttribute('aria-expanded', 'true'); btn.textContent = 'Details ▴'; }
+  if (scroll) setTimeout(function() { card.scrollIntoView({behavior: 'smooth', block: 'start'}); }, 60);
+}
+
+document.querySelectorAll('.details-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var n = btn.getAttribute('data-target');
+    var det = document.getElementById('details-' + n);
+    var open = det.hidden;
+    det.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+    btn.textContent = open ? 'Details ▴' : 'Details ▾';
+  });
+});
+
+document.querySelectorAll('.copy-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var n = btn.getAttribute('data-number');
+    var url = location.href.split('#')[0] + '#n=' + n;
+    function done() { var old = btn.textContent; btn.textContent = 'Copied ✓'; setTimeout(function() { btn.textContent = old; }, 1600); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done).catch(function() { prompt('Copy this link:', url); });
+    } else { prompt('Copy this link:', url); }
+  });
+});
+
+function handleHash() {
+  var m = location.hash.match(/(?:^#n=|^#listing-)(\d+)/);
+  if (m) expandCard(m[1], true);
+}
+window.addEventListener('hashchange', handleHash);
+
+/* Map */
+var map = L.map('map');
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 18, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
+
+var grotto = L.marker([45.248, -81.527], {icon: L.divIcon({className: '', html: '<div class="grotto" style="width:26px;height:26px">★</div>', iconSize: [26, 26]})})
+  .addTo(map).bindPopup('<strong>The Grotto</strong><br>Bruce Peninsula National Park');
+
+var groups = {};
+LISTINGS.forEach(function(d) {
+  var key = Math.round(d.lat * 50) + ',' + Math.round(d.lng * 50);
+  (groups[key] = groups[key] || []).push(d);
+});
+var bounds = [];
+Object.keys(groups).forEach(function(k) {
+  var g = groups[k];
+  var clat = g.reduce(function(s, d) { return s + d.lat; }, 0) / g.length;
+  var clng = g.reduce(function(s, d) { return s + d.lng; }, 0) / g.length;
+  if (g.length > 1) {
+    L.marker([clat, clng], {icon: L.divIcon({className: '', html: '<div class="dot" style="width:10px;height:10px"></div>', iconSize: [10, 10]})}).addTo(map);
+  }
+  g.forEach(function(d, i) {
+    var lat = d.lat, lng = d.lng;
+    if (g.length > 1) {
+      var ang = (2 * Math.PI * i) / g.length - Math.PI / 2;
+      lat = clat + 0.009 * Math.sin(ang);
+      lng = clng + 0.013 * Math.cos(ang);
+    }
+    bounds.push([lat, lng]);
+    var cls = 'pin' + (d.fav ? ' favpin' : '') + (d.hidden ? ' hidpin' : '');
+    var label = d.n + (d.fav ? '<span class="heart">♥</span>' : '');
+    var icon = L.divIcon({className: '', html: '<div class="' + cls + '" style="width:32px;height:32px">' + label + '</div>', iconSize: [32, 32]});
+    L.marker([lat, lng], {icon: icon}).addTo(map)
+      .bindPopup('<strong>#' + d.n + ' ' + d.name + '</strong><br>' + d.town + '<br><a href="#n=' + d.n + '">Open card</a> · <a target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=' + d.lat + ',' + d.lng + '">Directions</a>');
+  });
+});
+bounds.push([45.248, -81.527]);
+map.fitBounds(bounds, {padding: [28, 28]});
+
+handleHash();
+</script>
+</body>
+</html>
