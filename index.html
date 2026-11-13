@@ -54,6 +54,35 @@ details.hidden-sec{margin-top:34px}
 details.hidden-sec>summary{font-size:21px;font-weight:700;cursor:pointer;margin-bottom:12px}
 footer{color:var(--muted);font-size:13px;margin-top:36px}
 .leaflet-popup-content a{color:var(--teal);font-weight:600}
+/* Filter panel */
+#filter-panel{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:12px 14px;margin:0 0 16px}
+#filter-panel[hidden]{display:none}
+.fp-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0}
+.fp-label{font-size:13px;font-weight:700;color:var(--muted);min-width:52px}
+.seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
+.seg button{appearance:none;border:0;background:#fff;color:var(--ink);font-size:13px;font-weight:600;padding:7px 13px;cursor:pointer}
+.seg button.on{background:var(--teal);color:#fff}
+.fp-check{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;cursor:pointer}
+.fp-check input{width:17px;height:17px;accent-color:var(--teal)}
+#filter-panel select{font-size:14px;font-weight:600;color:var(--ink);border:1px solid var(--line);border-radius:999px;padding:7px 10px;background:#fff}
+.fp-count{font-size:13px;color:var(--muted);margin:8px 0 2px}
+.fp-reset{appearance:none;border:0;background:none;color:var(--teal);font-size:13px;font-weight:700;cursor:pointer;padding:4px 2px}
+/* Bottom app bar */
+body{padding-bottom:calc(64px + env(safe-area-inset-bottom,0px))}
+#appbar{position:fixed;left:0;right:0;bottom:0;z-index:1200;background:#fff;border-top:1px solid var(--line);box-shadow:0 -2px 12px rgba(34,48,58,.07);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+#appbar button{appearance:none;border:0;background:none;flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 7px;font-size:11px;font-weight:600;color:var(--muted);cursor:pointer;position:relative}
+#appbar button svg{width:22px;height:22px;fill:currentColor}
+#appbar button.on{color:var(--teal)}
+#appbar .bdg{position:absolute;top:3px;left:calc(50% + 3px);background:var(--teal);color:#fff;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:999px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+
+/* Viewer picks layer */
+.card.mine{border-color:var(--teal);box-shadow:0 0 0 1px var(--teal),0 2px 10px rgba(34,48,58,.05)}
+.yourpick{position:absolute;left:10px;bottom:10px;background:var(--ink);color:#fff;font-weight:700;font-size:13px;border-radius:999px;padding:5px 10px;box-shadow:0 1px 5px rgba(0,0,0,.25)}
+.cardctl{position:absolute;right:10px;bottom:10px;display:flex;gap:6px}
+.ctl{appearance:none;border:0;width:34px;height:34px;border-radius:999px;background:rgba(255,255,255,.96);box-shadow:0 1px 5px rgba(0,0,0,.3);font-size:16px;line-height:1;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center;padding:0}
+.ctl.favbtn.on{background:var(--teal);color:#fff}
+.ctl[hidden],.restore-btn[hidden],.yourpick[hidden]{display:none!important}
+.reason.viewer-reason{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -65,9 +94,35 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
 </header>
 
 <h2>The shortlist</h2>
-<div class="grid">
-<article class="card fav" id="listing-1" data-number="1">
-  <div class="photo"><img data-photo="n1-1.jpg" src="" alt="Elgin Cottages #2"><span class="numbadge">1</span><span class="toppick">♥ Top pick</span></div>
+<div id="filter-panel" hidden>
+  <div class="fp-row">
+    <span class="fp-label">Show</span>
+    <div class="seg" id="fp-type">
+      <button type="button" data-type="all" class="on">All</button>
+      <button type="button" data-type="house">Houses</button>
+      <button type="button" data-type="hotel">Hotels</button>
+    </div>
+  </div>
+  <div class="fp-row">
+    <span class="fp-label">Only</span>
+    <label class="fp-check"><input type="checkbox" id="fp-cancel"> Free cancellation</label>
+  </div>
+  <div class="fp-row">
+    <span class="fp-label">Sort by</span>
+    <select id="fp-sort">
+      <option value="number" selected>Number</option>
+      <option value="price">Price (low to high)</option>
+      <option value="drive">Drive time (shortest)</option>
+      <option value="rating">Rating (highest)</option>
+    </select>
+    <button type="button" class="fp-reset" id="fp-reset">Reset</button>
+    <button type="button" class="fp-reset" id="fp-clear-picks">Clear my picks</button>
+  </div>
+  <p class="fp-count" id="fp-count"></p>
+</div>
+<div class="grid" id="main-grid">
+<article class="card fav" id="listing-1" data-number="1" data-type="house" data-price="658.79" data-rating="4.7" data-reviews="43" data-drive="120" data-freecancel="1" data-fav="1">
+  <div class="photo"><img data-photo="n1-1.jpg" src="" alt="Elgin Cottages #2"><span class="numbadge">1</span><span class="toppick">♥ John's top pick</span></div>
   <div class="body">
     <div class="title-row"><h3>Elgin Cottages #2</h3></div>
     <p class="town">Port Elgin · Cottage · steps to the beach</p>
@@ -92,8 +147,8 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card fav" id="listing-2" data-number="2">
-  <div class="photo nophoto"><span class="numbadge">2</span><span class="toppick">♥ Top pick</span><a class="nophoto-link" href="https://www.airbnb.ca/rooms/1619662457711057482" target="_blank" rel="noopener">See photos on the listing →</a></div>
+<article class="card fav" id="listing-2" data-number="2" data-type="house" data-price="681" data-rating="4.75" data-reviews="8" data-drive="75" data-freecancel="1" data-fav="1">
+  <div class="photo nophoto"><span class="numbadge">2</span><span class="toppick">♥ John's top pick</span><a class="nophoto-link" href="https://www.airbnb.ca/rooms/1619662457711057482" target="_blank" rel="noopener">See photos on the listing →</a></div>
   <div class="body">
     <div class="title-row"><h3>Cozy 4-Season Cottage</h3></div>
     <p class="town">Sauble Beach · Bungalow, 5 min drive to the beach</p>
@@ -118,8 +173,8 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card fav" id="listing-3" data-number="3">
-  <div class="photo"><img data-photo="n3-1.jpg" src="" alt="Bruce Peninsula Country Loft on 17"><span class="numbadge">3</span><span class="toppick">♥ Top pick</span></div>
+<article class="card fav" id="listing-3" data-number="3" data-type="house" data-price="706.25" data-rating="4.98" data-reviews="259" data-drive="65" data-freecancel="1" data-fav="1">
+  <div class="photo"><img data-photo="n3-1.jpg" src="" alt="Bruce Peninsula Country Loft on 17"><span class="numbadge">3</span><span class="toppick">♥ John's top pick</span></div>
   <div class="body">
     <div class="title-row"><h3>Bruce Peninsula Country Loft on 17</h3></div>
     <p class="town">Wiarton · Loft · country property</p>
@@ -144,7 +199,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card" id="listing-11" data-number="11">
+<article class="card" id="listing-11" data-number="11" data-type="house" data-price="657.66" data-rating="5.0" data-reviews="4" data-drive="120" data-freecancel="1" data-fav="0">
   <div class="photo"><img data-photo="n11-1.jpg" src="" alt="Elgin Cottages · 3 Bedroom"><span class="numbadge">11</span></div>
   <div class="body">
     <div class="title-row"><h3>Elgin Cottages · 3 Bedroom</h3></div>
@@ -170,7 +225,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card" id="listing-13" data-number="13">
+<article class="card" id="listing-13" data-number="13" data-type="house" data-price="629.41" data-rating="4.92" data-reviews="13" data-drive="105" data-freecancel="1" data-fav="0">
   <div class="photo"><img data-photo="n13-1.jpg" src="" alt="The Bognor House"><span class="numbadge">13</span></div>
   <div class="body">
     <div class="title-row"><h3>The Bognor House</h3></div>
@@ -196,7 +251,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card" id="listing-15" data-number="15">
+<article class="card" id="listing-15" data-number="15" data-type="house" data-price="559" data-rating="4.71" data-reviews="45" data-drive="110" data-freecancel="1" data-fav="0">
   <div class="photo"><img data-photo="n15-1.jpg" src="" alt="Sweetness in the Heart of Meaford"><span class="numbadge">15</span></div>
   <div class="body">
     <div class="title-row"><h3>Sweetness in the Heart of Meaford</h3></div>
@@ -222,7 +277,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card" id="listing-16" data-number="16">
+<article class="card" id="listing-16" data-number="16" data-type="house" data-price="575.20" data-rating="4.97" data-reviews="179" data-drive="110" data-freecancel="1" data-fav="0">
   <div class="photo"><img data-photo="n16-1.jpg" src="" alt="Beach &amp; Hiking Nearby · Large Fenced Yard"><span class="numbadge">16</span></div>
   <div class="body">
     <div class="title-row"><h3>Beach &amp; Hiking Nearby · Large Fenced Yard</h3></div>
@@ -248,7 +303,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card" id="listing-17" data-number="17">
+<article class="card" id="listing-17" data-number="17" data-type="house" data-price="648.62" data-rating="4.92" data-reviews="64" data-drive="110" data-freecancel="1" data-fav="0">
   <div class="photo"><img data-photo="n17-1.jpg" src="" alt="Simple Downtown Comfort"><span class="numbadge">17</span></div>
   <div class="body">
     <div class="title-row"><h3>Simple Downtown Comfort</h3></div>
@@ -274,7 +329,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card" id="listing-18" data-number="18">
+<article class="card" id="listing-18" data-number="18" data-type="house" data-price="714.16" data-rating="4.92" data-reviews="148" data-drive="115" data-freecancel="1" data-fav="0">
   <div class="photo"><img data-photo="n18-1.jpg" src="" alt="Country View Loft with Hot Tub"><span class="numbadge">18</span></div>
   <div class="body">
     <div class="title-row"><h3>Country View Loft with Hot Tub</h3></div>
@@ -300,7 +355,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card" id="listing-19" data-number="19">
+<article class="card" id="listing-19" data-number="19" data-type="hotel" data-price="639" data-rating="0" data-reviews="0" data-drive="110" data-freecancel="1" data-fav="0">
   <div class="photo"><img data-photo="n19-1.jpg" src="" alt="Travelodge by Wyndham Owen Sound"><span class="numbadge">19</span></div>
   <div class="body">
     <div class="title-row"><h3>Travelodge by Wyndham Owen Sound</h3></div>
@@ -326,7 +381,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card" id="listing-20" data-number="20">
+<article class="card" id="listing-20" data-number="20" data-type="hotel" data-price="554" data-rating="0" data-reviews="0" data-drive="110" data-freecancel="1" data-fav="0">
   <div class="photo"><img data-photo="n20-1.jpg" src="" alt="Spark by Hilton Owen Sound"><span class="numbadge">20</span></div>
   <div class="body">
     <div class="title-row"><h3>Spark by Hilton Owen Sound</h3></div>
@@ -360,7 +415,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
 <details class="hidden-sec" id="hidden-section">
   <summary>Hidden (2)</summary>
   <div class="grid">
-<article class="card" id="listing-12" data-number="12">
+<article class="card" id="listing-12" data-number="12" data-type="house" data-price="516.56" data-rating="4.78" data-reviews="344" data-drive="38" data-freecancel="1" data-fav="0">
   <div class="photo"><img data-photo="n12-1.jpg" src="" alt="Cabin in the Woods"><span class="numbadge">12</span></div>
   <div class="body">
     <div class="title-row"><h3>Cabin in the Woods</h3></div>
@@ -386,7 +441,7 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
     </div>
   </div>
 </article>
-<article class="card" id="listing-14" data-number="14">
+<article class="card" id="listing-14" data-number="14" data-type="house" data-price="671.58" data-rating="4.82" data-reviews="51" data-drive="48" data-freecancel="1" data-fav="0">
   <div class="photo"><img data-photo="n14-1.jpg" src="" alt="Camp Frost"><span class="numbadge">14</span></div>
   <div class="body">
     <div class="title-row"><h3>Camp Frost</h3></div>
@@ -418,6 +473,31 @@ footer{color:var(--muted);font-size:13px;margin-top:36px}
 <footer>Shortlist for a family weekend near Tobermory and the Grotto, July 2027. Prices were checked on Airbnb / Booking.com on Nov 12, 2026 and can change. Photos from the listings themselves.</footer>
 </div>
 
+<nav id="appbar" aria-label="Board navigation">
+  <button type="button" id="ab-home">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 12 3l9 8.2h-2.6V21h-5v-6h-2.8v6h-5V11.2H3z"/></svg>
+    <span>Home</span>
+  </button>
+  <button type="button" id="ab-filters" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18l-7.1 8.1V19l-3.8 2v-7.9L3 5z"/></svg>
+    <span>Filters</span>
+  </button>
+  <button type="button" id="ab-map">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.1 7 13 7 13s7-7.9 7-13a7 7 0 0 0-7-7zm0 9.6A2.6 2.6 0 1 1 12 6.4a2.6 2.6 0 0 1 0 5.2z"/></svg>
+    <span>Map</span>
+  </button>
+  <button type="button" id="ab-fav" aria-pressed="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.1C6.9 16.7 3 13.4 3 9.5A4.9 4.9 0 0 1 12 6.2a4.9 4.9 0 0 1 9 3.3c0 3.9-3.9 7.2-9 11.6z"/></svg>
+    <span>Favourites</span>
+    <span class="bdg" id="ab-fav-count">3</span>
+  </button>
+  <button type="button" id="ab-hidden">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5.5c5.5 0 9.3 4.4 10 6.5-.7 2.1-4.5 6.5-10 6.5S2.7 14.1 2 12c.7-2.1 4.5-6.5 10-6.5zm0 10.3a3.8 3.8 0 1 0 0-7.6 3.8 3.8 0 0 0 0 7.6z"/><path d="M4.2 3.6 20.4 20l-1.4 1.4L2.8 5z"/></svg>
+    <span>Hidden</span>
+    <span class="bdg" id="ab-hidden-count">2</span>
+  </button>
+</nav>
+
 <script src="photos-data-1.js"></script>
 <script src="photos-data-2.js"></script>
 <script src="photos-data-3.js"></script>
@@ -430,6 +510,109 @@ document.querySelectorAll('img[data-photo]').forEach(function(im) {
   var d = window.PHOTO_DATA && window.PHOTO_DATA[im.getAttribute('data-photo')];
   if (d) im.src = d;
 });
+
+/* Viewer picks layer (public page): John's top picks are baked in above;
+   the viewer's own favourites/hidden live in localStorage. Numbers are fixed. */
+var JOHN_PICKS_N = [1, 2, 3];
+var DEFAULT_HIDDEN_N = [12, 14];
+var BOARD_ORDER_N = [1, 2, 3, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+var LS_KEY = 'tobermory-viewer-v1';
+var boardReady = false;
+var viewerState = {favs: [], hidden: DEFAULT_HIDDEN_N.slice()};
+try {
+  var savedViewer = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
+  if (savedViewer && Object.prototype.toString.call(savedViewer.favs) === '[object Array]' &&
+      Object.prototype.toString.call(savedViewer.hidden) === '[object Array]') {
+    viewerState = {favs: savedViewer.favs.slice(), hidden: savedViewer.hidden.slice()};
+  }
+} catch (e) {}
+function saveViewerState() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(viewerState)); } catch (e) {}
+}
+function isJohnPick(n) { return JOHN_PICKS_N.indexOf(n) >= 0; }
+function isMyPick(n) { return viewerState.favs.indexOf(n) >= 0; }
+function isHiddenNow(n) { return viewerState.hidden.indexOf(n) >= 0; }
+var cardsByNum = {};
+document.querySelectorAll('.card').forEach(function(c) {
+  var n = parseInt(c.getAttribute('data-number'), 10);
+  cardsByNum[n] = c;
+  var photo = c.querySelector('.photo');
+  var pill = document.createElement('span');
+  pill.className = 'yourpick'; pill.textContent = '\u2665 Your pick'; pill.hidden = true;
+  photo.appendChild(pill);
+  var ctl = document.createElement('div'); ctl.className = 'cardctl';
+  var hb = document.createElement('button');
+  hb.type = 'button'; hb.className = 'ctl favbtn'; hb.textContent = '\u2661';
+  hb.setAttribute('aria-label', 'Mark as your favourite'); hb.setAttribute('aria-pressed', 'false');
+  var xb = document.createElement('button');
+  xb.type = 'button'; xb.className = 'ctl hidebtn'; xb.textContent = '\u00d7';
+  xb.setAttribute('aria-label', 'Hide this place');
+  ctl.appendChild(hb); ctl.appendChild(xb); photo.appendChild(ctl);
+  hb.addEventListener('click', function() { toggleFav(n); });
+  xb.addEventListener('click', function() { hideCard(n); });
+  var actions = c.querySelector('.actions');
+  var rb = document.createElement('button');
+  rb.type = 'button'; rb.className = 'btn restore-btn'; rb.textContent = 'Restore'; rb.hidden = true;
+  rb.addEventListener('click', function() { restoreCard(n); });
+  actions.insertBefore(rb, actions.firstChild);
+  var vr = document.createElement('p');
+  vr.className = 'reason viewer-reason'; vr.textContent = 'Hidden by you'; vr.hidden = true;
+  var cancel = c.querySelector('.cancel');
+  cancel.parentNode.insertBefore(vr, cancel.nextSibling);
+});
+function applyViewerState() {
+  var mainGrid = document.getElementById('main-grid');
+  var hiddenGrid = document.querySelector('#hidden-section .grid');
+  BOARD_ORDER_N.forEach(function(n) {
+    var c = cardsByNum[n];
+    if (!c) return;
+    var hid = isHiddenNow(n);
+    (hid ? hiddenGrid : mainGrid).appendChild(c);
+    c.setAttribute('data-fav', isMyPick(n) ? '1' : '0');
+    c.classList.toggle('mine', isMyPick(n));
+    var pill = c.querySelector('.yourpick'); if (pill) pill.hidden = !isMyPick(n);
+    var hb = c.querySelector('.favbtn');
+    if (hb) {
+      hb.classList.toggle('on', isMyPick(n));
+      hb.textContent = isMyPick(n) ? '\u2665' : '\u2661';
+      hb.setAttribute('aria-pressed', String(isMyPick(n)));
+    }
+    var xb = c.querySelector('.hidebtn'); if (xb) xb.hidden = hid;
+    var rb = c.querySelector('.restore-btn'); if (rb) rb.hidden = !hid;
+    var vr = c.querySelector('.viewer-reason');
+    if (vr) vr.hidden = !(hid && DEFAULT_HIDDEN_N.indexOf(n) < 0);
+  });
+  var fc = document.getElementById('ab-fav-count');
+  if (fc) fc.textContent = viewerState.favs.length;
+  var hc = document.getElementById('ab-hidden-count');
+  if (hc) hc.textContent = viewerState.hidden.length;
+  var hs = document.getElementById('hidden-section');
+  if (hs) {
+    var sum = hs.querySelector('summary');
+    if (sum) sum.textContent = 'Hidden (' + viewerState.hidden.length + ')';
+  }
+  if (boardReady) {
+    if (typeof updatePins === 'function') updatePins();
+    if (typeof applyFilters === 'function') applyFilters();
+  }
+}
+function toggleFav(n) {
+  var i = viewerState.favs.indexOf(n);
+  if (i >= 0) viewerState.favs.splice(i, 1); else viewerState.favs.push(n);
+  saveViewerState(); applyViewerState();
+}
+function hideCard(n) {
+  if (!isHiddenNow(n)) { viewerState.hidden.push(n); saveViewerState(); applyViewerState(); }
+}
+function restoreCard(n) {
+  var i = viewerState.hidden.indexOf(n);
+  if (i >= 0) { viewerState.hidden.splice(i, 1); saveViewerState(); applyViewerState(); }
+}
+var clearPicksBtn = document.getElementById('fp-clear-picks');
+if (clearPicksBtn) clearPicksBtn.addEventListener('click', function() {
+  viewerState.favs = []; saveViewerState(); applyViewerState();
+});
+applyViewerState();
 
 function expandCard(n, scroll) {
   var det = document.getElementById('details-' + n);
@@ -480,6 +663,7 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 var grotto = L.marker([45.248, -81.527], {icon: L.divIcon({className: '', html: '<div class="grotto" style="width:26px;height:26px">★</div>', iconSize: [26, 26]})})
   .addTo(map).bindPopup('<strong>The Grotto</strong><br>Bruce Peninsula National Park');
 
+var pinMarkers = {};
 var groups = {};
 LISTINGS.forEach(function(d) {
   var key = Math.round(d.lat * 50) + ',' + Math.round(d.lng * 50);
@@ -501,15 +685,117 @@ Object.keys(groups).forEach(function(k) {
       lng = clng + 0.013 * Math.cos(ang);
     }
     bounds.push([lat, lng]);
-    var cls = 'pin' + (d.fav ? ' favpin' : '') + (d.hidden ? ' hidpin' : '');
-    var label = d.n + (d.fav ? '<span class="heart">♥</span>' : '');
-    var icon = L.divIcon({className: '', html: '<div class="' + cls + '" style="width:32px;height:32px">' + label + '</div>', iconSize: [32, 32]});
-    L.marker([lat, lng], {icon: icon}).addTo(map)
-      .bindPopup('<strong>#' + d.n + ' ' + d.name + '</strong><br>' + d.town + '<br><a href="#n=' + d.n + '">Open card</a> · <a target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=' + d.lat + ',' + d.lng + '">Directions</a>');
+    var mk = L.marker([lat, lng], {icon: L.divIcon({className: '', html: '<div class="pin" style="width:32px;height:32px">' + d.n + '</div>', iconSize: [32, 32]})}).addTo(map);
+    mk.bindPopup(pinPopupHtml(d));
+    pinMarkers[d.n] = {marker: mk, d: d};
   });
 });
 bounds.push([45.248, -81.527]);
 map.fitBounds(bounds, {padding: [28, 28]});
+function pinPopupHtml(d) {
+  var h = '<strong>#' + d.n + ' ' + d.name + '</strong><br>' + d.town;
+  if (isJohnPick(d.n)) h += '<br>\u2665 John\'s top pick';
+  if (isMyPick(d.n)) h += '<br>\u2665 Your pick';
+  h += '<br><a href="#n=' + d.n + '">Open card</a> \u00b7 <a target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination=' + d.lat + ',' + d.lng + '">Directions</a>';
+  return h;
+}
+function updatePins() {
+  Object.keys(pinMarkers).forEach(function(k) {
+    var rec = pinMarkers[k], d = rec.d;
+    var heart = isJohnPick(d.n) || isMyPick(d.n);
+    var cls = 'pin' + (heart ? ' favpin' : '') + (isHiddenNow(d.n) ? ' hidpin' : '');
+    var label = d.n + (heart ? '<span class="heart">\u2665</span>' : '');
+    rec.marker.setIcon(L.divIcon({className: '', html: '<div class="' + cls + '" style="width:32px;height:32px">' + label + '</div>', iconSize: [32, 32]}));
+    rec.marker.setPopupContent(pinPopupHtml(d));
+  });
+}
+updatePins();
+
+/* Bottom app bar + filters */
+var fpState = {type: 'all', freeCancel: false, favOnly: false, sort: 'number'};
+var mainGrid = document.getElementById('main-grid');
+function currentMainCards() { return Array.prototype.slice.call(mainGrid.querySelectorAll('.card')); }
+var mainCards = currentMainCards();
+
+var favCount = mainCards.filter(function(c) { return c.getAttribute('data-fav') === '1'; }).length;
+document.getElementById('ab-fav-count').textContent = favCount;
+var hiddenCards = document.querySelectorAll('#hidden-section .card');
+document.getElementById('ab-hidden-count').textContent = hiddenCards.length;
+
+function applyFilters() {
+  var mainCards = currentMainCards();
+  var shown = 0;
+  mainCards.forEach(function(c) {
+    var ok = true;
+    if (fpState.type !== 'all' && c.getAttribute('data-type') !== fpState.type) ok = false;
+    if (fpState.freeCancel && c.getAttribute('data-freecancel') !== '1') ok = false;
+    if (fpState.favOnly && c.getAttribute('data-fav') !== '1') ok = false;
+    c.style.display = ok ? '' : 'none';
+    if (ok) shown++;
+  });
+  var sorted = mainCards.slice().sort(function(a, b) {
+    if (fpState.sort === 'price') return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
+    if (fpState.sort === 'drive') return parseInt(a.getAttribute('data-drive'), 10) - parseInt(b.getAttribute('data-drive'), 10);
+    if (fpState.sort === 'rating') return parseFloat(b.getAttribute('data-rating')) - parseFloat(a.getAttribute('data-rating'));
+    return parseInt(a.getAttribute('data-number'), 10) - parseInt(b.getAttribute('data-number'), 10);
+  });
+  sorted.forEach(function(c) { mainGrid.appendChild(c); });
+  document.getElementById('fp-count').textContent = 'Showing ' + shown + ' of ' + mainCards.length + ' places';
+  document.getElementById('ab-fav').classList.toggle('on', fpState.favOnly);
+  document.getElementById('ab-fav').setAttribute('aria-pressed', String(fpState.favOnly));
+}
+
+document.querySelectorAll('#fp-type button').forEach(function(b) {
+  b.addEventListener('click', function() {
+    document.querySelectorAll('#fp-type button').forEach(function(x) { x.classList.remove('on'); });
+    b.classList.add('on');
+    fpState.type = b.getAttribute('data-type');
+    applyFilters();
+  });
+});
+document.getElementById('fp-cancel').addEventListener('change', function() {
+  fpState.freeCancel = this.checked;
+  applyFilters();
+});
+document.getElementById('fp-sort').addEventListener('change', function() {
+  fpState.sort = this.value;
+  applyFilters();
+});
+document.getElementById('fp-reset').addEventListener('click', function() {
+  fpState = {type: 'all', freeCancel: false, favOnly: false, sort: 'number'};
+  document.querySelectorAll('#fp-type button').forEach(function(x) { x.classList.toggle('on', x.getAttribute('data-type') === 'all'); });
+  document.getElementById('fp-cancel').checked = false;
+  document.getElementById('fp-sort').value = 'number';
+  applyFilters();
+});
+
+var filterPanel = document.getElementById('filter-panel');
+document.getElementById('ab-home').addEventListener('click', function() {
+  window.scrollTo({top: 0, behavior: 'smooth'});
+});
+document.getElementById('ab-filters').addEventListener('click', function() {
+  var open = filterPanel.hidden;
+  filterPanel.hidden = !open;
+  this.setAttribute('aria-expanded', String(open));
+  this.classList.toggle('on', open);
+  if (open) filterPanel.scrollIntoView({behavior: 'smooth', block: 'start'});
+});
+document.getElementById('ab-map').addEventListener('click', function() {
+  document.getElementById('map').scrollIntoView({behavior: 'smooth', block: 'start'});
+  setTimeout(function() { if (window.map) map.invalidateSize(); }, 350);
+});
+document.getElementById('ab-fav').addEventListener('click', function() {
+  fpState.favOnly = !fpState.favOnly;
+  applyFilters();
+  if (fpState.favOnly) mainGrid.scrollIntoView({behavior: 'smooth', block: 'start'});
+});
+document.getElementById('ab-hidden').addEventListener('click', function() {
+  var hs = document.getElementById('hidden-section');
+  hs.open = true;
+  hs.scrollIntoView({behavior: 'smooth', block: 'start'});
+});
+boardReady = true;
+applyViewerState();
 
 handleHash();
 </script>
